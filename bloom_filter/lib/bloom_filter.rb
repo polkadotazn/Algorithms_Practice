@@ -20,17 +20,17 @@ class BloomFilter
     # the max number of items in the filter (for which we'll guarantee the failure rate):
     @capacity = capacity
     # the required number of bits in the array:
-    @num_bits # = ?
+    @num_bits = BloomFilter.required_bits(capacity, failure_rate)
     # our bit array uses true/false instead of 0/1:
-    @bit_array # = ?
+    @bit_array = Array.new(@num_bits, false)
     # the number of unique additions to the filter:
     @count = 0
     # the number of bits that have been flipped in our filter:
     @bits_flipped = 0
     # the number of hash functions that minimizes the probability of false positives:
-    @hash_num # = ?
+    @hash_num = BloomFilter.required_hashes(capacity, num_bits)
     # random bytes that we'll use to generate new composite hashes:
-    @random_variations # = ?
+    @random_variations = generate_hash_variations
   end
 
   def insert(key)
@@ -42,15 +42,39 @@ class BloomFilter
     #
     # (Note: this means that whenever there's a collision, your BloomFilter's
     # count will not increase.)
+    previously_included = true
+
+    @hash_num.times do |i|
+      bucket = hashed_index(key, i)
+
+      if !@bit_array[bucket]
+        previously_included = false
+        @bits_flipped += 1
+        @bit_array[bucket] = true
+      end
+    end
+
+    if !previously_included
+      @count += 1
+    end
+
+    !previously_included
   end
 
   def include?(key)
     # Go through all of your composite hash functions and see if any of those
     # bits are not flipped.
+    @hash_num.times do |i|
+      bucket = hashed_index(key, i)
+      return false unless @bit_array[bucket]
+    end
+
+    true
   end
 
   def clear
     # Clean out your Bloom Filter, you filthy child.
+    @bit_array = Array.new(@num_bits, false)
   end
 
   def inspect
@@ -65,6 +89,7 @@ class BloomFilter
     #
     # Make sure that they both have the same parameters. Or else
     # all hell will break loose. Can you figure out why?
+    raise ArgumentError if @capacity != other_filter.capacity
   end
 
   private
@@ -76,12 +101,14 @@ class BloomFilter
 
   def hashed_index(key, i)
     # Maybe now is the time to try out that XORing and modulo trick? Hmmmmmm...
+    hash(@random_variations[i] ^ hash(key.hash)) % @num_bits
   end
 
   # Make sure you deterministically generate your variations. Otherwise your
   # merge isn't going to work. However, to maintain your false positive rate,
   # they also have to be pretty random. See what you can come up with.
   def generate_hash_variations
+    [].tap { |variations| @hash_num.times { |i| variations << hash(i) } }
   end
 
   class Scalable
