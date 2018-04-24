@@ -183,3 +183,15 @@ class MinMaxStackQueue
     @out_stack.push(@in_stack.pop) until @in_stack.empty?
   end
 end
+
+# now for the actual optimized solution
+def optimized_mwr(arr, w)
+  queue = MinMaxStackQueue.new
+  best_range = nil
+
+  num_windows = arr.length + 1 - w
+
+  arr.each { |n| queue.push(n) }
+
+  queue.max
+end
