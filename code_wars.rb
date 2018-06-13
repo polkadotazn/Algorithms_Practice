@@ -35,5 +35,20 @@ def order_weight(strng)
 end
 
 def primeFactors(n)
-  
+  str = ""
+  i = 2
+  while n != 1
+    counter = 0
+    until n % i != 0
+      counter += 1
+      n = n / i
+    end
+    if counter == 1
+      str += "(#{i})"
+    elsif counter > 1
+      str += "(#{i}**#{counter})"
+    end
+    i += 1
+  end
+  str
 end
