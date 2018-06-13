@@ -52,3 +52,55 @@ def primeFactors(n)
   end
   str
 end
+
+#rectangle perimeter with sides which are fibonacci lengths
+def rectangle(n)
+  sum = 0
+  i = 1
+  i2 = 1
+  1.upto(n + 1) do |x|
+    sum += i
+    i, i2 = i2, i + i2
+  end
+  sum * 4
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#
