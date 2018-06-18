@@ -65,6 +65,27 @@ def rectangle(n)
   sum * 4
 end
 
+#add a row to a tree
+def add_one_row(root, v, d, level=1)
+    return if !root
+    if d == 1
+        new_root = TreeNode.new(v)
+        new_root.left = root
+        return new_root
+    elsif level == d - 1
+        old_r = root.right
+        old_l = root.left
+        root.right = TreeNode.new(v)
+        root.left = TreeNode.new(v)
+        root.right.right = old_r
+        root.left.left = old_l
+    else
+        add_one_row(root.left, v, d, level + 1)
+        add_one_row(root.right, v, d, level + 1)
+    end
+    root
+end
+
 
 
 

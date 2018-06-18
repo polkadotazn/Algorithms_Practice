@@ -16,10 +16,10 @@ end
 def flip_islands(matrix, r_i, c_i)
   w = matrix[0].length
   h = matrix.length
-  [[1,0],[0,1]].each do |coor|
+  [[1,0],[0,1],[-1,0],[0,-1]].each do |coor|
     new_row = coor[0] + r_i
     new_col = coor[1] + c_i
-    if new_row < h && new_col < w
+    if new_row < h && new_col < w && new_row >= 0 && new_col >= 0
       if matrix[new_row][new_col] == true
         matrix[new_row][new_col] = false
         matrix = flip_islands(matrix, new_row, new_col)
